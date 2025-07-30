@@ -1,0 +1,78 @@
+/* css/checklist-styles.css */
+
+#task-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Style pour une tâche complétée */
+.task-item.completed {
+  background-color: #f9fafb;
+  opacity: 0.7;
+}
+
+.task-item.completed .task-label {
+  text-decoration: line-through;
+  color: var(--color-text-light);
+}
+
+/* --- Style pour la case à cocher personnalisée --- */
+.task-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Cache la case à cocher par défaut du navigateur */
+.task-checkbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+/* Crée la nouvelle case à cocher visible */
+.custom-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  margin-right: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.custom-checkbox svg {
+  width: 16px;
+  height: 16px;
+  color: white;
+  display: none; /* Caché par défaut */
+}
+
+/* Style quand la case est cochée */
+.task-checkbox input:checked + .custom-checkbox {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.task-checkbox input:checked + .custom-checkbox svg {
+  display: block; /* Affiche le V quand c'est coché */
+}
+
+.task-label {
+  font-weight: 500;
+}

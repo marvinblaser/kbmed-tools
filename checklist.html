@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- MODIFIÉ -->
+    <title>Checklist de Validation</title>
+
+    <!-- Styles partagés de votre site -->
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Styles spécifiques à l'éditeur d'images (réutilisés pour les boutons) -->
+    <link rel="stylesheet" href="css/editor-styles.css" />
+    <!-- Styles spécifiques à la checklist -->
+    <link rel="stylesheet" href="css/checklist-styles.css" />
+  </head>
+  <body>
+    <!-- Le header/sidebar sera injecté ici par shared.js -->
+    <div id="header-container"></div>
+
+    <!-- Le contenu principal de la page -->
+    <main>
+      <!-- MODIFIÉ -->
+      <h1>Checklist de Validation</h1>
+
+      <!-- Le conteneur où les tâches seront injectées par JavaScript -->
+      <div id="task-list-container"></div>
+
+      <div class="actions-footer">
+        <button id="reset-checklist-btn" class="btn">Réinitialiser</button>
+      </div>
+    </main>
+
+    <!-- Scripts de votre application -->
+    <script src="js/shared.js"></script>
+    <script src="js/checklist.js"></script>
+  </body>
+</html>

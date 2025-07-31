@@ -3,16 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <title>Éditeur d'Images</title>
-
-    <!-- Styles partagés de votre site -->
     <link rel="stylesheet" href="css/style.css" />
-    <!-- Styles spécifiques au nouveau design de l'éditeur -->
     <link rel="stylesheet" href="css/editor-styles.css" />
-    <!-- Styles pour la grille de la médiathèque (utilisés dans le modal) -->
     <link rel="stylesheet" href="css/mediatheque-styles.css" />
-
-    <!-- Librairies externes requises pour cette page -->
-    <!-- CORRIGÉ : Ajout du lien CSS manquant pour Cropper.js -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
       rel="stylesheet"
@@ -21,17 +14,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   </head>
   <body>
-    <!-- Le header/sidebar sera injecté ici par shared.js -->
     <div id="header-container"></div>
-
-    <!-- Le contenu principal de la page -->
     <main>
       <h1 id="editor-title">Éditeur d'images</h1>
-
       <div id="main-controls" class="editor-header">
         <div class="header-left">
           <label for="image-loader" class="btn"> Importer un fichier </label>
-          <!-- CORRIGÉ : Ajout de l'attribut 'capture' pour les mobiles -->
           <input
             type="file"
             id="image-loader"
@@ -137,86 +125,27 @@
           </button>
         </div>
       </div>
-
       <div id="image-container">
         <img id="image-display" src="" alt="" />
       </div>
-
       <div class="actions-footer">
         <div id="crop-actions" class="hidden">
           <button id="confirm-crop-btn" class="btn btn-success">
             Confirmer
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m4.5 12.75 6 6 9-13.5"
-              />
-            </svg>
           </button>
-          <button id="cancel-crop-btn" class="btn btn-danger">
-            Annuler
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18 18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+          <button id="cancel-crop-btn" class="btn btn-danger">Annuler</button>
         </div>
         <div id="download-wrapper">
           <button id="download-btn" class="btn btn-primary">
             Télécharger l'image
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-              />
-            </svg>
           </button>
         </div>
       </div>
     </main>
-
-    <!-- Panneau de texte flottant -->
     <div id="text-panel" class="hidden">
       <div class="panel-header">
         <h3>TEXTE</h3>
-        <button id="close-text-panel-btn" class="btn icon-btn">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18 18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+        <button id="close-text-panel-btn" class="btn icon-btn">&times;</button>
       </div>
       <div class="panel-body">
         <div>
@@ -239,22 +168,16 @@
         </div>
       </div>
     </div>
-
-    <!-- Modal pour la médiathèque -->
     <div id="media-modal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Choisir une image</h2>
           <button id="close-media-modal-btn" class="btn icon-btn">&times;</button>
         </div>
-        <div id="modal-media-grid">
-          <!-- Grille des images de la médiathèque -->
-        </div>
+        <div id="modal-media-grid"></div>
       </div>
     </div>
-
-    <!-- Scripts de votre application -->
     <script src="js/shared.js"></script>
-    <script type="module" src="js/image-editor.js"></script>
+    <script src="js/image-editor.js"></script>
   </body>
 </html>

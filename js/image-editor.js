@@ -1,5 +1,11 @@
 // js/image-editor.js
-import { getImages } from "./db-helper.js";
+
+// --- SIMULATION DE BASE DE DONNÉES (copiée pour l'accès) ---
+const db = {
+  getFolders: () =>
+    JSON.parse(localStorage.getItem("media_folders") || "[]"),
+  getFiles: () => JSON.parse(localStorage.getItem("media_files") || "[]"),
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sélecteurs
@@ -34,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetX, offsetY;
   let cropper = null;
   let history = [];
+  let currentModalFolderId = null;
 
   // --- GESTION DE L'HISTORIQUE (UNDO) ---
   function getCurrentState() {
@@ -78,19 +85,45 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- GESTION DU MODAL DE LA MÉDIATHÈQUE ---
-  async function openMediaModal() {
-    modalMediaGrid.innerHTML = "Chargement...";
-    mediaModal.classList.remove("hidden");
-    const images = await getImages();
+  async function renderModalMedia() {
     modalMediaGrid.innerHTML = "";
-    images.forEach((image) => {
-      const thumbnailUrl = URL.createObjectURL(image.file);
-      const thumb = document.createElement("div");
-      thumb.className = "media-thumbnail";
-      thumb.dataset.imageId = image.id;
-      thumb.innerHTML = `<img src="${thumbnailUrl}" alt="${image.name}">`;
-      modalMediaGrid.appendChild(thumb);
+    const allFolders = db.getFolders();
+    const allFiles = db.getFiles();
+
+    const subFolders = allFolders.filter(
+      (f) => f.parentId === currentModalFolderId,
+    );
+    subFolders.forEach((folder) => {
+      const folderEl = document.createElement("div");
+      folderEl.className = "media-item folder-item";
+      folderEl.dataset.folderId = folder.id;
+      folderEl.innerHTML = `
+        <div>
+          <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+          </svg>
+        </div>
+        <span class="folder-name">${folder.name}</span>
+      `;
+      modalMediaGrid.appendChild(folderEl);
     });
+
+    const filesInFolder = allFiles.filter(
+      (f) => f.folderId === currentModalFolderId,
+    );
+    for (const file of filesInFolder) {
+      const fileEl = document.createElement("div");
+      fileEl.className = "media-item media-thumbnail";
+      fileEl.dataset.fileId = file.id;
+      fileEl.innerHTML = `<img src="${file.dataUrl}" alt="${file.name}">`;
+      modalMediaGrid.appendChild(fileEl);
+    }
+  }
+
+  function openMediaModal() {
+    currentModalFolderId = null;
+    renderModalMedia();
+    mediaModal.classList.remove("hidden");
   }
 
   function closeMediaModal() {
@@ -100,23 +133,24 @@ document.addEventListener("DOMContentLoaded", () => {
   openMediaLibraryBtn.addEventListener("click", openMediaModal);
   closeModalBtn.addEventListener("click", closeMediaModal);
 
-  // --- LOGIQUE DE TÉLÉCHARGEMENT DEPUIS LA MÉDIATHÈQUE (CORRIGÉE) ---
-  modalMediaGrid.addEventListener("click", async (e) => {
+  modalMediaGrid.addEventListener("click", (e) => {
+    const folder = e.target.closest(".folder-item");
+    if (folder) {
+      currentModalFolderId = Number(folder.dataset.folderId);
+      renderModalMedia();
+      return;
+    }
+
     const thumb = e.target.closest(".media-thumbnail");
     if (thumb) {
-      const imageId = parseInt(thumb.dataset.imageId, 10);
-      const images = await getImages();
-      const selectedImage = images.find((img) => img.id === imageId);
-      if (selectedImage) {
-        // Utilise FileReader pour obtenir une data URL (Base64)
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          imageDisplay.src = event.target.result; // Assigne la data URL
-          imageDisplay.onload = () => {
-            reset(true);
-          };
+      const fileId = Number(thumb.dataset.fileId);
+      const allFiles = db.getFiles();
+      const selectedFile = allFiles.find((f) => f.id === fileId);
+      if (selectedFile) {
+        imageDisplay.src = selectedFile.dataUrl;
+        imageDisplay.onload = () => {
+          reset(true);
         };
-        reader.readAsDataURL(selectedImage.file); // Lance la lecture
         closeMediaModal();
       }
     }

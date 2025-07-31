@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <!-- Styles spécifiques (réutilisés) -->
     <link rel="stylesheet" href="css/editor-styles.css" />
-    <!-- NOUVEAU : Styles pour la médiathèque -->
+    <!-- Styles pour la médiathèque -->
     <link rel="stylesheet" href="css/mediatheque-styles.css" />
   </head>
   <body>
@@ -22,11 +22,13 @@
         <label for="add-image-input" class="btn btn-primary">
           Ajouter une image
         </label>
+        <!-- CORRIGÉ : Ajout de l'attribut 'capture' pour les mobiles -->
         <input
           type="file"
           id="add-image-input"
           class="hidden"
           accept="image/*"
+          capture="environment"
           multiple
         />
       </div>
@@ -38,7 +40,6 @@
 
     <!-- Scripts de votre application -->
     <script src="js/shared.js"></script>
-    <!-- Le type="module" est crucial pour utiliser import/export -->
     <script type="module" src="js/mediatheque.js"></script>
   </body>
 </html>

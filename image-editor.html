@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/mediatheque-styles.css" />
 
     <!-- Librairies externes requises pour cette page -->
+    <!-- CORRIGÉ : Ajout du lien CSS manquant pour Cropper.js -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
       rel="stylesheet"
@@ -30,13 +31,14 @@
       <div id="main-controls" class="editor-header">
         <div class="header-left">
           <label for="image-loader" class="btn"> Importer un fichier </label>
+          <!-- CORRIGÉ : Ajout de l'attribut 'capture' pour les mobiles -->
           <input
             type="file"
             id="image-loader"
             class="hidden"
             accept="image/*"
+            capture="environment"
           />
-          <!-- NOUVEAU BOUTON -->
           <button id="open-media-library-btn" class="btn">
             Choisir depuis la médiathèque
           </button>
@@ -238,7 +240,7 @@
       </div>
     </div>
 
-    <!-- NOUVEAU : Modal pour la médiathèque -->
+    <!-- Modal pour la médiathèque -->
     <div id="media-modal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="modal-header">

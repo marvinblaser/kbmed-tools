@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadWrapper = document.getElementById("download-wrapper");
   const cropToolBtn = document.getElementById("crop-tool-btn");
   const undoBtn = document.getElementById("undo-btn");
-  // Rétablir n'est plus dans l'HTML, donc on le commente ou supprime
-  // const redoBtn = document.getElementById("redo-btn");
   const textToolBtn = document.getElementById("text-tool-btn");
   const textPanel = document.getElementById("text-panel");
   const closeTextPanelBtn = document.getElementById("close-text-panel-btn");
@@ -36,8 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetX, offsetY;
   let cropper = null;
   let history = [];
-  // La pile Rétablir n'est plus nécessaire
-  // let redoStack = [];
 
   // --- GESTION DE L'HISTORIQUE (UNDO) ---
   function getCurrentState() {
@@ -55,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveState() {
-    // redoStack = []; // Plus nécessaire
     history.push(getCurrentState());
     updateHistoryButtons();
   }
@@ -71,14 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateHistoryButtons() {
     undoBtn.disabled = history.length <= 1;
-    // redoBtn.disabled = redoStack.length === 0; // Plus nécessaire
   }
 
   undoBtn.addEventListener("click", () => {
     if (history.length > 1) {
-      // La logique de redoStack est retirée
-      const previousState = history[history.length - 2]; // On prend l'avant-dernier
-      history.pop(); // On retire l'état actuel
+      const previousState = history[history.length - 2];
+      history.pop();
       restoreState(previousState);
       updateHistoryButtons();
     }
@@ -107,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   openMediaLibraryBtn.addEventListener("click", openMediaModal);
   closeModalBtn.addEventListener("click", closeMediaModal);
 
+  // --- LOGIQUE DE TÉLÉCHARGEMENT DEPUIS LA MÉDIATHÈQUE (CORRIGÉE) ---
   modalMediaGrid.addEventListener("click", async (e) => {
     const thumb = e.target.closest(".media-thumbnail");
     if (thumb) {
@@ -114,12 +108,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const images = await getImages();
       const selectedImage = images.find((img) => img.id === imageId);
       if (selectedImage) {
-        const imageUrl = URL.createObjectURL(selectedImage.file);
-        imageDisplay.src = imageUrl;
-        imageDisplay.onload = () => {
-          URL.revokeObjectURL(imageUrl);
-          reset(true);
+        // Utilise FileReader pour obtenir une data URL (Base64)
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageDisplay.src = event.target.result; // Assigne la data URL
+          imageDisplay.onload = () => {
+            reset(true);
+          };
         };
+        reader.readAsDataURL(selectedImage.file); // Lance la lecture
         closeMediaModal();
       }
     }
@@ -231,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selectText(null);
     if (!isNewImage) imageDisplay.src = "";
     history = [];
-    // redoStack = []; // Plus nécessaire
     saveState();
   }
   resetBtn.addEventListener("click", () => reset(false));

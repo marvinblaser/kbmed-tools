@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadWrapper = document.getElementById("download-wrapper");
   const cropToolBtn = document.getElementById("crop-tool-btn");
   const undoBtn = document.getElementById("undo-btn");
-
   const textToolBtn = document.getElementById("text-tool-btn");
   const textPanel = document.getElementById("text-panel");
   const closeTextPanelBtn = document.getElementById("close-text-panel-btn");
@@ -29,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetX, offsetY;
   let cropper = null;
   let history = [];
-  let redoStack = [];
 
   // --- GESTION DE L'HISTORIQUE (UNDO/REDO) ---
   function getCurrentState() {
@@ -47,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveState() {
-    redoStack = [];
     history.push(getCurrentState());
     updateHistoryButtons();
   }
@@ -67,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   undoBtn.addEventListener("click", () => {
     if (history.length > 1) {
-      redoStack.push(history.pop());
       const previousState = history[history.length - 1];
       restoreState(previousState);
       updateHistoryButtons();
@@ -180,17 +176,50 @@ document.addEventListener("DOMContentLoaded", () => {
     selectText(null);
     if (!isNewImage) imageDisplay.src = "";
     history = [];
-    redoStack = [];
     saveState();
   }
   resetBtn.addEventListener("click", () => reset(false));
 
+  // --- LOGIQUE DE TÉLÉCHARGEMENT (CORRIGÉE) ---
   downloadBtn.addEventListener("click", () => {
-    selectText(null);
+    selectText(null); // Désélectionne pour ne pas avoir la bordure bleue
+
     html2canvas(imageContainer).then((canvas) => {
+      // 'canvas' est la capture du conteneur entier (avec les zones blanches)
+
+      // 1. Obtenir les dimensions et la position de l'image affichée
+      const containerRect = imageContainer.getBoundingClientRect();
+      const imageRect = imageDisplay.getBoundingClientRect();
+
+      // 2. Calculer la position relative de l'image dans le conteneur
+      const cropX = imageRect.left - containerRect.left;
+      const cropY = imageRect.top - containerRect.top;
+      const cropWidth = imageRect.width;
+      const cropHeight = imageRect.height;
+
+      // 3. Créer un nouveau canvas aux dimensions exactes de l'image
+      const croppedCanvas = document.createElement("canvas");
+      croppedCanvas.width = cropWidth;
+      croppedCanvas.height = cropHeight;
+      const croppedCtx = croppedCanvas.getContext("2d");
+
+      // 4. Dessiner (recadrer) la partie de la grande capture sur le nouveau canvas
+      croppedCtx.drawImage(
+        canvas, // La source (grande capture)
+        cropX,
+        cropY,
+        cropWidth,
+        cropHeight, // La zone à copier depuis la source
+        0,
+        0,
+        cropWidth,
+        cropHeight, // Où dessiner dans la destination
+      );
+
+      // 5. Créer le lien de téléchargement à partir du nouveau canvas recadré
       const link = document.createElement("a");
       link.download = "image-modifiee.png";
-      link.href = canvas.toDataURL("image/png");
+      link.href = croppedCanvas.toDataURL("image/png");
       link.click();
     });
   });
@@ -200,8 +229,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!imageDisplay.src || cropper) return;
     editorTitle.innerText = "Rogner l'image";
     mainControls.classList.add("hidden");
-    downloadWrapper.classList.add("hidden"); // Cache le bouton de téléchargement
-    cropActions.classList.remove("hidden"); // Affiche les actions de rognage
+    downloadWrapper.classList.add("hidden");
+    cropActions.classList.remove("hidden");
     imageContainer
       .querySelectorAll(".text-overlay")
       .forEach((el) => (el.style.display = "none"));
@@ -217,8 +246,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cropper.destroy();
     cropper = null;
     mainControls.classList.remove("hidden");
-    downloadWrapper.classList.remove("hidden"); // Réaffiche le bouton de téléchargement
-    cropActions.classList.add("hidden"); // Cache les actions de rognage
+    downloadWrapper.classList.remove("hidden");
+    cropActions.classList.add("hidden");
     imageContainer
       .querySelectorAll(".text-overlay")
       .forEach((el) => (el.style.display = "block"));

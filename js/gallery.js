@@ -1,21 +1,22 @@
 // js/gallery.js
 document.addEventListener("DOMContentLoaded", () => {
-  // --- STRUCTURE DE DONNÉES CENTRALE ---
+  // --- STRUCTURE DE DONNÉES CENTRALE (AVEC DE VRAIES IMAGES) ---
   const MEDICAL_DATA = [
     {
       id: "orl",
       name: "ORL",
-      image: "https://placehold.co/220x160/a3e635/4d7c0f?text=ORL",
+      // Utilisation de picsum.photos pour des images réelles
+      image: "https://picsum.photos/seed/orl/220/160",
       apparatusTypes: [
         {
           id: "otoscope",
           name: "Otoscope",
-          image: "https://placehold.co/220x160/7dd3fc/0c4a6e?text=Otoscope",
+          image: "https://picsum.photos/seed/otoscope/220/160",
           models: [
             {
               id: "otoscope-x100",
               name: "Modèle X-100",
-              image: "https://placehold.co/220x160/f9a8d4/831843?text=X-100",
+              image: "https://picsum.photos/seed/x100/220/160",
               checklist: [
                 { id: "x100-task1", text: "Vérifier la source lumineuse." },
                 { id: "x100-task2", text: "Nettoyer la lentille grossissante." },
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             {
               id: "otoscope-y200",
               name: "Modèle Y-200",
-              image: "https://placehold.co/220x160/f9a8d4/831843?text=Y-200",
+              image: "https://picsum.photos/seed/y200/220/160",
               checklist: [
                 { id: "y200-task1", text: "Tester la batterie rechargeable." },
                 { id: "y200-task2", text: "Vérifier la connexion de la tête." },
@@ -38,17 +39,17 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       id: "gyneco",
       name: "Gynécologie",
-      image: "https://placehold.co/220x160/f87171/7f1d1d?text=Gynéco",
+      image: "https://picsum.photos/seed/gyneco/220/160",
       apparatusTypes: [
         {
           id: "colposcope",
           name: "Colposcope",
-          image: "https://placehold.co/220x160/67e8f9/164e63?text=Colposcope",
+          image: "https://picsum.photos/seed/colposcope/220/160",
           models: [
             {
               id: "colpo-z3",
               name: "Modèle Z-3",
-              image: "https://placehold.co/220x160/c4b5fd/4c1d95?text=Z-3",
+              image: "https://picsum.photos/seed/z3/220/160",
               checklist: [
                 { id: "z3-task1", text: "Ajuster la mise au point." },
                 { id: "z3-task2", text: "Nettoyer les optiques." },
@@ -62,17 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       id: "sterilisation",
       name: "Stérilisation",
-      image: "https://placehold.co/220x160/9ca3af/1f2937?text=Stérilisation",
+      image: "https://picsum.photos/seed/sterilisation/220/160",
       apparatusTypes: [
         {
           id: "autoclave",
           name: "Autoclave",
-          image: "https://placehold.co/220x160/facc15/713f12?text=Autoclave",
+          image: "https://picsum.photos/seed/autoclave/220/160",
           models: [
             {
               id: "auto-s500",
               name: "Modèle S-500",
-              image: "https://placehold.co/220x160/fca5a5/7f1d1d?text=S-500",
+              image: "https://picsum.photos/seed/s500/220/160",
               checklist: [
                 { id: "s500-task1", text: "Contrôler le joint de la porte." },
                 { id: "s500-task2", text: "Lancer un cycle de test à vide." },
@@ -93,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const galleryContainer = document.getElementById("gallery-container");
   const paginationContainer = document.getElementById("pagination-container");
   const backBtn = document.getElementById("back-btn");
-  // NOUVEAU : Sélecteur pour le bouton de réinitialisation
   const resetChecklistBtn = document.getElementById("reset-checklist-btn");
 
   let currentView = {
@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
     galleryContainer.innerHTML = "";
     paginationContainer.innerHTML = "";
     backBtn.classList.add("hidden");
-    // NOUVEAU : Cacher le bouton reset par défaut
     resetChecklistBtn.classList.add("hidden");
 
     if (currentView.modelId) {
@@ -119,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       const model = apparatus.models.find((m) => m.id === currentView.modelId);
       renderChecklist(model);
-      // NOUVEAU : Afficher le bouton reset quand une checklist est visible
       resetChecklistBtn.classList.remove("hidden");
     } else if (currentView.apparatusId) {
       const domain = MEDICAL_DATA.find((d) => d.id === currentView.domainId);
@@ -320,9 +318,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // NOUVEAU : Événement pour le bouton de réinitialisation
   resetChecklistBtn.addEventListener("click", () => {
-    if (!currentView.modelId) return; // Sécurité
+    if (!currentView.modelId) return;
 
     const domain = MEDICAL_DATA.find((d) => d.id === currentView.domainId);
     const apparatus = domain.apparatusTypes.find(
@@ -334,7 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
       model.checklist.forEach((task) => {
         localStorage.setItem(task.id, "false");
       });
-      // Re-render la vue pour mettre à jour l'affichage
       renderView();
     }
   });

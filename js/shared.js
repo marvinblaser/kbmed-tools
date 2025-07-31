@@ -5,7 +5,7 @@ function setupLayout() {
   const mainElement = document.querySelector("main");
   if (!headerContainer || !mainElement) return;
 
-  // --- STRUCTURE DE DONNÉES DU MENU MISE À JOUR ---
+  // --- STRUCTURE DE DONNÉES POUR LE MENU ---
   const menuItems = [
     { type: "link", href: "index.html", text: "Accueil" },
     {
@@ -21,16 +21,14 @@ function setupLayout() {
       type: "category",
       text: "Service",
       items: [
-        // MODIFIÉ : Ajout du lien vers la nouvelle page
-        { href: "gallery.html", text: "Checklist Appareils" }
-        // { href: "checklist-service.html", text: "Checklist Service" },
+        { href: "checklist-service.html", text: "Checklist Service" }
       ],
     },
   ];
 
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
-  // Le reste du code de génération du menu reste identique...
+  // --- LOGIQUE DE GÉNÉRATION HTML ---
   const navHTML = menuItems
     .map((item) => {
       if (item.type === "link") {
@@ -72,7 +70,7 @@ function setupLayout() {
     </header>
   `;
 
-  // Le reste du code pour le layout responsive reste identique...
+  // Le reste du code pour le layout responsive reste identique
   const appContainer = document.createElement("div");
   appContainer.className = "app-container";
   const burgerButton = document.createElement("button");

@@ -1,17 +1,19 @@
 /* css/style.css */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 :root {
   --font-main: "Poppins", sans-serif;
-  --color-sidebar-bg: #111827;
-  --color-sidebar-link: #9ca3af;
+  /* MODIFIÉ : Nouvelle palette de couleurs pour la sidebar */
+  --color-sidebar-bg: #111827; /* Bleu nuit / Gris très foncé */
+  --color-sidebar-link: #9ca3af; /* Gris clair pour le texte */
   --color-sidebar-link-hover: #ffffff;
-  --color-primary: #4f46e5;
+  --color-primary: #6366f1; /* Indigo/Violet pour les boutons actifs */
   --color-body-bg: #f9fafb;
   --color-text-dark: #111827;
+  --color-text-light: #6b7280;
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
     0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --border-radius: 8px;
+  --border-radius: 10px; /* Coins plus arrondis */
 }
 * {
   box-sizing: border-box;
@@ -42,7 +44,10 @@ header h1 {
   color: white;
   text-align: center;
   margin-bottom: 2.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.75rem;
+  /* Effet de lueur subtil */
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 nav {
   display: flex;
@@ -68,9 +73,9 @@ nav a.active {
   font-weight: 600;
 }
 
-/* --- NOUVEAUX STYLES POUR LE MENU DÉROULANT --- */
+/* --- Styles pour le menu déroulant --- */
 .nav-category summary {
-  color: var(--color-sidebar-link-hover);
+  color: #e5e7eb; /* Blanc cassé pour les catégories */
   font-weight: 600;
   padding: 12px 18px;
   border-radius: var(--border-radius);
@@ -85,24 +90,26 @@ nav a.active {
   background-color: #374151;
 }
 .nav-category summary::after {
-  content: "›"; /* Flèche simple */
+  content: "›";
   font-size: 1.5em;
   transition: transform 0.2s ease;
   transform: rotate(0deg);
+}
+.nav-category[open] > summary {
+  color: white;
 }
 .nav-category[open] > summary::after {
   transform: rotate(90deg);
 }
 .nav-category ul {
   list-style: none;
-  padding: 8px 0 8px 20px; /* Indentation pour les sous-éléments */
+  padding: 8px 0 8px 20px;
   margin: 0;
 }
 .nav-category ul a {
   font-size: 0.95em;
   padding: 8px 18px;
 }
-/* --- FIN DES NOUVEAUX STYLES --- */
 
 main {
   flex-grow: 1;
@@ -110,9 +117,13 @@ main {
   position: relative;
   padding-bottom: 100px;
 }
+main h1 {
+  font-family: "Inter", sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
 .burger-menu {
   display: none;
-}
-@media (max-width: 768px) {
-  /* ... styles du menu burger ... */
 }

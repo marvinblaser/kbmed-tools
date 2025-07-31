@@ -1,5 +1,36 @@
 /* css/checklist-styles.css */
 
+/* NOUVEAU : Styles pour la navigation par onglets */
+.tab-nav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--color-text-light);
+  border-bottom: 2px solid transparent;
+  transform: translateY(2px); /* Pour aligner avec la bordure du conteneur */
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-text-dark);
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+/* --- FIN DES NOUVEAUX STYLES --- */
+
 #task-list-container {
   display: flex;
   flex-direction: column;
@@ -17,7 +48,6 @@
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
-/* Style pour une tâche complétée */
 .task-item.completed {
   background-color: #f9fafb;
   opacity: 0.7;
@@ -28,14 +58,12 @@
   color: var(--color-text-light);
 }
 
-/* --- Style pour la case à cocher personnalisée --- */
 .task-checkbox {
   display: flex;
   align-items: center;
   cursor: pointer;
 }
 
-/* Cache la case à cocher par défaut du navigateur */
 .task-checkbox input {
   opacity: 0;
   width: 0;
@@ -43,7 +71,6 @@
   position: absolute;
 }
 
-/* Crée la nouvelle case à cocher visible */
 .custom-checkbox {
   width: 24px;
   height: 24px;
@@ -63,7 +90,6 @@
   display: none; /* Caché par défaut */
 }
 
-/* Style quand la case est cochée */
 .task-checkbox input:checked + .custom-checkbox {
   background-color: var(--color-primary);
   border-color: var(--color-primary);

@@ -1,4 +1,6 @@
 // js/image-editor.js
+import { getImages } from "./db-helper.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   // Sélecteurs
   const editorTitle = document.getElementById("editor-title");
@@ -11,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadWrapper = document.getElementById("download-wrapper");
   const cropToolBtn = document.getElementById("crop-tool-btn");
   const undoBtn = document.getElementById("undo-btn");
+  // Rétablir n'est plus dans l'HTML, donc on le commente ou supprime
+  // const redoBtn = document.getElementById("redo-btn");
   const textToolBtn = document.getElementById("text-tool-btn");
   const textPanel = document.getElementById("text-panel");
   const closeTextPanelBtn = document.getElementById("close-text-panel-btn");
@@ -21,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const cropActions = document.getElementById("crop-actions");
   const confirmCropBtn = document.getElementById("confirm-crop-btn");
   const cancelCropBtn = document.getElementById("cancel-crop-btn");
+  const openMediaLibraryBtn = document.getElementById("open-media-library-btn");
+  const mediaModal = document.getElementById("media-modal");
+  const closeModalBtn = document.getElementById("close-media-modal-btn");
+  const modalMediaGrid = document.getElementById("modal-media-grid");
 
   // Variables d'état
   let selectedTextElement = null;
@@ -28,8 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetX, offsetY;
   let cropper = null;
   let history = [];
+  // La pile Rétablir n'est plus nécessaire
+  // let redoStack = [];
 
-  // --- GESTION DE L'HISTORIQUE (UNDO/REDO) ---
+  // --- GESTION DE L'HISTORIQUE (UNDO) ---
   function getCurrentState() {
     const texts = [];
     imageContainer.querySelectorAll(".text-overlay").forEach((el) => {
@@ -45,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveState() {
+    // redoStack = []; // Plus nécessaire
     history.push(getCurrentState());
     updateHistoryButtons();
   }
@@ -60,13 +71,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateHistoryButtons() {
     undoBtn.disabled = history.length <= 1;
+    // redoBtn.disabled = redoStack.length === 0; // Plus nécessaire
   }
 
   undoBtn.addEventListener("click", () => {
     if (history.length > 1) {
-      const previousState = history[history.length - 1];
+      // La logique de redoStack est retirée
+      const previousState = history[history.length - 2]; // On prend l'avant-dernier
+      history.pop(); // On retire l'état actuel
       restoreState(previousState);
       updateHistoryButtons();
+    }
+  });
+
+  // --- GESTION DU MODAL DE LA MÉDIATHÈQUE ---
+  async function openMediaModal() {
+    modalMediaGrid.innerHTML = "Chargement...";
+    mediaModal.classList.remove("hidden");
+    const images = await getImages();
+    modalMediaGrid.innerHTML = "";
+    images.forEach((image) => {
+      const thumbnailUrl = URL.createObjectURL(image.file);
+      const thumb = document.createElement("div");
+      thumb.className = "media-thumbnail";
+      thumb.dataset.imageId = image.id;
+      thumb.innerHTML = `<img src="${thumbnailUrl}" alt="${image.name}">`;
+      modalMediaGrid.appendChild(thumb);
+    });
+  }
+
+  function closeMediaModal() {
+    mediaModal.classList.add("hidden");
+  }
+
+  openMediaLibraryBtn.addEventListener("click", openMediaModal);
+  closeModalBtn.addEventListener("click", closeMediaModal);
+
+  modalMediaGrid.addEventListener("click", async (e) => {
+    const thumb = e.target.closest(".media-thumbnail");
+    if (thumb) {
+      const imageId = parseInt(thumb.dataset.imageId, 10);
+      const images = await getImages();
+      const selectedImage = images.find((img) => img.id === imageId);
+      if (selectedImage) {
+        const imageUrl = URL.createObjectURL(selectedImage.file);
+        imageDisplay.src = imageUrl;
+        imageDisplay.onload = () => {
+          URL.revokeObjectURL(imageUrl);
+          reset(true);
+        };
+        closeMediaModal();
+      }
     }
   });
 
@@ -176,47 +231,35 @@ document.addEventListener("DOMContentLoaded", () => {
     selectText(null);
     if (!isNewImage) imageDisplay.src = "";
     history = [];
+    // redoStack = []; // Plus nécessaire
     saveState();
   }
   resetBtn.addEventListener("click", () => reset(false));
 
-  // --- LOGIQUE DE TÉLÉCHARGEMENT (CORRIGÉE) ---
   downloadBtn.addEventListener("click", () => {
-    selectText(null); // Désélectionne pour ne pas avoir la bordure bleue
-
+    selectText(null);
     html2canvas(imageContainer).then((canvas) => {
-      // 'canvas' est la capture du conteneur entier (avec les zones blanches)
-
-      // 1. Obtenir les dimensions et la position de l'image affichée
       const containerRect = imageContainer.getBoundingClientRect();
       const imageRect = imageDisplay.getBoundingClientRect();
-
-      // 2. Calculer la position relative de l'image dans le conteneur
       const cropX = imageRect.left - containerRect.left;
       const cropY = imageRect.top - containerRect.top;
       const cropWidth = imageRect.width;
       const cropHeight = imageRect.height;
-
-      // 3. Créer un nouveau canvas aux dimensions exactes de l'image
       const croppedCanvas = document.createElement("canvas");
       croppedCanvas.width = cropWidth;
       croppedCanvas.height = cropHeight;
       const croppedCtx = croppedCanvas.getContext("2d");
-
-      // 4. Dessiner (recadrer) la partie de la grande capture sur le nouveau canvas
       croppedCtx.drawImage(
-        canvas, // La source (grande capture)
+        canvas,
         cropX,
         cropY,
         cropWidth,
-        cropHeight, // La zone à copier depuis la source
+        cropHeight,
         0,
         0,
         cropWidth,
-        cropHeight, // Où dessiner dans la destination
+        cropHeight,
       );
-
-      // 5. Créer le lien de téléchargement à partir du nouveau canvas recadré
       const link = document.createElement("a");
       link.download = "image-modifiee.png";
       link.href = croppedCanvas.toDataURL("image/png");

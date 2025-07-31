@@ -5,7 +5,6 @@ function setupLayout() {
   const mainElement = document.querySelector("main");
   if (!headerContainer || !mainElement) return;
 
-  // --- STRUCTURE DE DONNÉES POUR LE MENU ---
   const menuItems = [
     { type: "link", href: "index.html", text: "Accueil" },
     {
@@ -21,14 +20,15 @@ function setupLayout() {
       type: "category",
       text: "Service",
       items: [
-        { href: "checklist-service.html", text: "Checklist Service" }
+        { href: "mediatheque.html", text: "Médiathèque" },
+        { href: "gallery.html", text: "Galerie Appareils" },
+        { href: "checklist-service.html", text: "Checklist Service" },
       ],
     },
   ];
 
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
-  // --- LOGIQUE DE GÉNÉRATION HTML ---
   const navHTML = menuItems
     .map((item) => {
       if (item.type === "link") {
@@ -70,7 +70,6 @@ function setupLayout() {
     </header>
   `;
 
-  // Le reste du code pour le layout responsive reste identique
   const appContainer = document.createElement("div");
   appContainer.className = "app-container";
   const burgerButton = document.createElement("button");
